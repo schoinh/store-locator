@@ -1,0 +1,36 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css">
+  <script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+  <script src="https://atlas.microsoft.com/sdk/javascript/service/2/atlas-service.min.js"></script>
+  <link rel="stylesheet" href="index.css" type="text/css">
+  <script src="index.js"></script>
+
+  <!-- Create a file named apiKey.js in the same directory and save the API key as a variable with the name apiKey. -->
+  <script src="./apiKey.js"></script>
+</head>
+
+<body>
+  <header>
+    <img src="images/Logo.png" />
+    <span>Contoso Coffee</span>
+  </header>
+  <main>
+    <div class="searchPanel">
+      <div>
+        <input id="searchTbx" type="search" placeholder="Find a store" />
+        <button id="searchBtn" title="Search"></button>
+      </div>
+    </div>
+    <div id="listPanel"></div>
+    <div id="myMap"></div>
+    <button id="myLocationBtn" title="My Location"></button>
+  </main>
+</body>
+
+</html>
