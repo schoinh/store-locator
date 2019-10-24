@@ -151,4 +151,89 @@ function setMapToUserLocation() {
   });
 };
 
+function loadStoreData() {
+  fetch(storeLocationDataUrl, { mode: 'no-cors' })
+    .then(response => response.text())
+    .then(function (text) {
+      var features = [];
+      var lines = text.split('\n');
+      var row = lines[0].split('\t');
+
+      var header = {};
+      var numColumns = row.length;
+      for (var i = 0; i < row.length; i++) {
+        header[row[i]] = i;
+      };
+
+      for (var i = 1; i < lines.length; i++) {
+        row = lines[i].split('\t');
+        if (row.length >= numColumns) {
+          features.push(new atlas.data.Feature(new atlas.data.Point([parseFloat(row[header['Longitude']]), parseFloat(row[header['Latitude']])]), {
+            AddressLine: row[header['AddressLine']],
+            City: row[header['City']],
+            Municipality: row[header['Municipality']],
+            AdminDivision: row[header['AdminDivision']],
+            Country: row[header['Country']],
+            PostCode: row[header['PostCode']],
+            Phone: row[header['Phone']],
+            StoreType: row[header['StoreType']],
+            IsWiFiHotSpot: (row[header['IsWiFiHotSpot']].toLowerCase() === 'true') ? true : false,
+            IsWheelchairAccessible: (row[header['IsWheelchairAccessible']].toLowerCase() === 'true') ? true : false,
+            Opens: parseInt(row[header['Opens']]),
+            Closes: parseInt(row[header['Closes']])
+          }));
+        };
+      };
+
+      datasource.add(new atlas.data.FeatureCollection(features));
+      updateListItems();
+    });
+};
+
+var listItemTemplate = `
+<div class="listItem" onclick="itemSelected(\'{id}\')">
+  <div class="listItem-title">{title}</div>
+  {city}<br/>
+  Open until {closes}<br/>
+  {distance} miles away
+</div>`;
+
+function updateListItems() {
+  centerMarker.setOptions({
+    visible: false
+  });
+
+  var camera = map.getCamera();
+  var listPanel = document.getElementById('listPanel');
+
+  if (camera.zoom < maxClusterZoomLevel) {
+    popup.close();
+    listPanel.innerHTML = '<div class="statusMessage">Search for a location, zoom in, or select My Location button to see individual store locations.</div>';
+  } else {
+    centerMarker.setOptions({
+      position: camera.center,
+      visible: true
+    });
+
+    var html = [], properties;
+    var data = map.layers.getRenderedShapes(map.getCamera().bounds, [iconLayer]);
+    var distances = {};
+
+    data.forEach(function (shape) {
+      if (shape instanceof atlas.Shape) {
+        distances[shape.getId()] = Math.round(atlas.math.getDistanceTo(camera.center, shape.getCoordinates(), 'miles') * 100) / 100;
+      }
+    });
+
+    data.sort(function (x, y) {
+      return distances[x.getId()] - distances[y.getId()];
+    });
+
+    data.forEach(function (shape) {
+      properties = shape.getProperties();
+
+    })
+  }
+}
+
 window.onload = initialize;
